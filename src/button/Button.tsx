@@ -13,46 +13,6 @@ export type buttonTypes = [
     'danger',
 ]
 
-const buttonColor = (type: String) => {
-    switch (type) {
-        case 'default':
-            return 'white';
-        case 'primary':
-            return 'blue';
-        case 'success':
-            return 'green';
-        case 'warning':
-            return 'yellow';
-        case 'info':
-            return 'gray';
-        case 'danger':
-            return 'red';
-    }
-}
-
-const buttonBgColor = (type: String, plain: Boolean) => {
-    if (type == 'default') {
-        if (plain) return buttonColor(type)
-        else return 'blue-100'
-    } else {
-        if (plain) return buttonColor(type) + '-500'
-        else return buttonColor(type) + '-400'
-    }
-}
-
-const buttonBorder = (type: String) => {
-    if (type == 'default') return '#DCDFE6'
-    else return buttonColor(type) + '-300'
-}
-
-const buttonHoverBorder = (type: String, plain: Boolean) => {
-    if (type == 'default') {
-        if (plain) return 'blue-500'
-        else return 'blue-300'
-    }
-    return buttonColor(type) + '-300'
-}
-
 export const props = {
     type: {
         type: String as PropType<buttonTypes>,
@@ -83,7 +43,47 @@ export const props = {
 export default defineComponent({
     name: "ViButton",
     props,
+    transformOn: true,
     setup(props, { slots }) {
+        const buttonColor = (type: String) => {
+            switch (type) {
+                case 'default':
+                    return 'white';
+                case 'primary':
+                    return 'blue';
+                case 'success':
+                    return 'green';
+                case 'warning':
+                    return 'yellow';
+                case 'info':
+                    return 'gray';
+                case 'danger':
+                    return 'red';
+            }
+        }
+
+        const buttonBgColor = (type: String, plain: Boolean) => {
+            if (type == 'default') {
+                if (plain) return buttonColor(type)
+                else return 'blue-100'
+            } else {
+                if (plain) return buttonColor(type) + '-500'
+                else return buttonColor(type) + '-400'
+            }
+        }
+        
+        const buttonBorder = (type: String) => {
+            if (type == 'default') return '#DCDFE6'
+            else return buttonColor(type) + '-300'
+        }
+        
+        const buttonHoverBorder = (type: String, plain: Boolean) => {
+            if (type == 'default') {
+                if (plain) return 'blue-500'
+                else return 'blue-300'
+            }
+            return buttonColor(type) + '-300'
+        }
 
         const size = {
             small: {
@@ -103,8 +103,16 @@ export default defineComponent({
             },
         }
 
-        return () => <button
-            class={`
+        const buttonActiveStyle = (type: String) => {
+            if(type == 'default') {
+                return 'border-blue-500'
+            }
+            else {
+                return 'bg-' + buttonColor(type) + '-600'
+            }
+        }
+
+        let styles = `
             py-${props.circle? '2': size[props.size].y}
             px-${props.circle? '2': size[props.size].x}
             font-500
@@ -121,7 +129,9 @@ export default defineComponent({
             text-${size[props.size].text}
             m-1
             box-border
-        `}
+            active:${buttonActiveStyle(props.type)}
+        `
+        return () => <button class={styles}
         >
             {props.icon != "" ? <i class={`i-ic-baseline-${props.icon} p-3`}></i> : ""}
             {slots.default ? slots.default() : ''}
